@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reproductor de Radio Moderno</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #282c34;
+            margin: 0;
+        }
+
+        .radio-player {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 300px;
+            position: relative;
+        }
+
+        .logo {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+
+        .info {
+            margin-bottom: 20px;
+        }
+
+        .info p {
+            margin: 5px 0;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .controls button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 24px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .controls button:hover {
+            transform: scale(1.1);
+        }
+
+        .volume {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .volume label {
+            margin-right: 10px;
+            color: #333;
+        }
+
+        .volume input {
+            width: 100px;
+        }
+
+        .cube {
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            transform-style: preserve-3d;
+            animation: spin 3s infinite linear;
+            display: none;
+        }
+
+        .cube div {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+        }
+
+        .front  { transform: translateZ(25px); }
+        .back   { transform: rotateY(180deg) translateZ(25px); }
+        .right  { transform: rotateY(90deg) translateZ(25px); }
+        .left   { transform: rotateY(-90deg) translateZ(25px); }
+        .top    { transform: rotateX(90deg) translateZ(25px); }
+        .bottom { transform: rotateX(-90deg) translateZ(25px); }
+
+        @keyframes spin {
+            from { transform: translateX(-50%) rotateY(0deg); }
+            to { transform: translateX(-50%) rotateY(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="radio-player">
+        <div class="cube" id="cube">
+            <div class="front"></div>
+            <div class="back"></div>
+            <div class="right"></div>
+            <div class="left"></div>
+            <div class="top"></div>
+            <div class="bottom"></div>
+        </div>
+        <img src="20240616_215430.png" alt="Logo de netotv rafio" class="logo">
+        <div class="info">
+            <p id="stationName">la radio numero 1 del internet</p>
+            <p id="trackInfo">Cargando...</p>
+        </div>
+        <div class="controls">
+            <button id="playBtn"><span class="material-icons">play_arrow</span></button>
+            <button id="pauseBtn"><span class="material-icons">pause</span></button>
+            <button id="stopBtn"><span class="material-icons">stop</span></button>
+        </div>
+        <div class="volume">
+            <label for="volumeControl">Volumen: </label>
+            <input type="range" id="volumeControl" min="0" max="1" step="0.1">
+        </div>
+    </div>
+    <script>
+        // URL directa del flujo de audio
+        const streamUrl = 'https://stream.zeno.fm/jrnzrgmbjvqtv';
+
+        function initPlayer() {
+            try {
+                const audio = new Audio(streamUrl);
+                const playBtn = document.getElementById('playBtn');
+                const pauseBtn = document.getElementById('pauseBtn');
+                const stopBtn = document.getElementById('stopBtn');
+                const volumeControl = document.getElementById('volumeControl');
+                const trackInfo = document.getElementById('trackInfo');
+                const cube = document.getElementById('cube');
+
+                playBtn.addEventListener('click', () => {
+                    audio.play();
+                    trackInfo.textContent = 'Reproduciendo';
+                    cube.style.display = 'block';
+                });
+
+                pauseBtn.addEventListener('click', () => {
+                    audio.pause();
+                    trackInfo.textContent = 'Pausado';
+                    cube.style.display = 'none';
+                });
+
+                stopBtn.addEventListener('click', () => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    trackInfo.textContent = 'Detenido';
+                    cube.style.display = 'none';
+                });
+
+                volumeControl.addEventListener('input', () => {
+                    audio.volume = volumeControl.value;
+                });
+
+            } catch (error) {
+                console.error('Error al inicializar el reproductor:', error);
+                document.getElementById('trackInfo').textContent = 'Error al cargar la estación';
+            }
+        }
+
+        // Inicializa el reproductor al cargar la página
+        document.addEventListener('DOMContentLoaded', initPlayer);
+    </script>
+</body>
+</html>
